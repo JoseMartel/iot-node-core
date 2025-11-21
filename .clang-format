@@ -1,0 +1,11 @@
+# Based on Google's C++ style guide: https://google.github.io/styleguide/cppguide.html
+BasedOnStyle: Google
+
+# 4-space indents instead of 2
+IndentWidth: 4
+
+# Do not allow short blocks on a single line
+AllowShortBlocksOnASingleLine: false
+
+# Allow breaking strings on multiple lines
+BreakStringLiterals: true

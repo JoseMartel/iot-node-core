@@ -1,0 +1,94 @@
+# Build artifacts
+build/
+build_*_*/
+
+# Configuration files
+sdkconfig
+sdkconfig.old
+
+# Managed components (if used)
+managed_components/
+# dependencies.lock should generally be tracked if using idf_component_manager,
+# but some sources suggest ignoring it. For a general template, it's safer to ignore
+# and let the user decide to track if needed.
+dependencies.lock
+
+# Python artifacts
+*.pyc
+__pycache__/
+
+# IDE specific files
+.vscode/
+.clangd/
+.ccls-cache/
+.idea/
+*.user
+*.workspace
+*.suo
+*.sln
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# ESP-IDF toolchain files
+.espressif/
+
+# Compiled binaries and maps
+*.bin
+*.elf
+*.map
+
+# Log files
+*.log
+app_info_*.txt
+size_info_*.txt
+pytest_embedded_log/
+TEST_LOGS/
+build_summary_*.xml
+
+# Object files
+*.o
+
+# macOS specific
+.DS_Store
+.directory
+
+# Gtags
+GTAGS
+GRTAGS
+GPATH
+
+# Emacs
+*~
+.#*
+#*#
+.dir-locals.el
+
+# Eclipse
+.settings/
+
+# Doxygen build artifacts
+docs/_build/
+docs/doxygen_sqlite3.db
+
+# Gcov coverage reports
+*.gcda
+*.gcno
+coverage.info
+coverage_report/
+
+# MyPy cache
+.mypy_cache/
+flake8_output.txt
+
+# Clang config
+.clangd
+
+# Vale
+.vale/styles/*.
