@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Node Core | Config</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --accent: #38bdf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-size: 24px; color: var(--accent); margin: 0; }
+        p { color: #94a3b8; font-size: 14px; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-2px); }
+        .card-title { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card-value { font-size: 20px; font-weight: bold; margin-top: 5px; color: var(--text); }
+
+        .settings {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 99px;
+            font-size: 10px;
+            font-weight: bold;
+            background: #334155;
+            margin-top: 10px;
+        }
+
+        #status-msg { margin-top: 15px; font-size: 13px; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IoT Node Generic</h1>
+            <p>ESP32-C6 Core v0.1.0</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">Memoria Libre</div>
+                <div id="heap" class="card-value">-- KB</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Buffer NVS</div>
+                <div id="pending" class="card-value">-- / 1024</div>
+                <div class="badge" id="storage-status">OK</div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-title">Tiempo de Actividad</div>
+                <div id="uptime" class="card-value">--:--:--</div>
+            </div>
+        </div>
+
+        <div class="settings">
+            <h3 style="margin-top: 0; font-size: 18px;">Configuración Base</h3>
+            <div class="form-group">
+                <label>Frecuencia de Muestreo (Lectura - s)</label>
+                <input type="number" id="read_int" placeholder="Ej: 10">
+            </div>
+            <div class="form-group">
+                <label>Frecuencia de Reporte (Envío - s)</label>
+                <input type="number" id="send_int" placeholder="Ej: 60">
+            </div>
+            <button onclick="saveSettings()" id="save-btn">Guardar Cambios</button>
+            <div id="status-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        async function updateStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                document.getElementById('heap').textContent = (data.heap / 1024).toFixed(1) + ' KB';
+                document.getElementById('pending').textContent = data.pending + ' / 1024';
+                
+                const s = data.uptime;
+                const h = Math.floor(s / 3600);
+                const m = Math.floor((s % 3600) / 60);
+                const sec = s % 60;
+                document.getElementById('uptime').textContent = 
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+                
+                const statusBadge = document.getElementById('storage-status');
+                if (data.pending > 800) {
+                    statusBadge.style.background = '#f59e0b';
+                    statusBadge.textContent = 'BUFFER LLENO';
+                } else {
+                    statusBadge.style.background = '#10b981';
+                    statusBadge.textContent = 'STORAGE OK';
+                }
+            } catch (e) { console.error('Error status update', e); }
+        }
+
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                document.getElementById('read_int').value = data.read_int;
+                document.getElementById('send_int').value = data.send_int;
+            } catch (e) { console.error('Error config update', e); }
+        }
+
+        async function saveSettings() {
+            const btn = document.getElementById('save-btn');
+            const msg = document.getElementById('status-msg');
+            btn.disabled = true;
+            msg.style.display = 'block';
+            msg.textContent = 'Guardando...';
+            msg.style.color = '#94a3b8';
+
+            const payload = {
+                read_int: parseInt(document.getElementById('read_int').value),
+                send_int: parseInt(document.getElementById('send_int').value)
+            };
+
+            try {
+                const res = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    msg.textContent = '¡Configuración guardada exitosamente!';
+                    msg.style.color = '#10b981';
+                } else {
+                    msg.textContent = 'Error al guardar. Intente de nuevo.';
+                    msg.style.color = '#ef4444';
+                }
+            } catch (e) {
+                msg.textContent = 'Error de conexión.';
+                msg.style.color = '#ef4444';
+            }
+            
+            setTimeout(() => {
+                btn.disabled = false;
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        // Init
+        updateStatus();
+        loadConfig();
+        setInterval(updateStatus, 3000);
+    </script>
+</body>
+</html>
