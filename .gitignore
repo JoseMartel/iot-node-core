@@ -30,6 +30,9 @@ __pycache__/
 *.sublime-workspace
 *.swp
 *.swo
+.cache
+.cache/*
+*.idx
 
 # CMake generated files
 CMakeCache.txt

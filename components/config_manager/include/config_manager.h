@@ -3,13 +3,19 @@
 
 #include "esp_err.h"
 #include <stdint.h>
+#include <stddef.h>
 
 /**
  * @brief Initialize the NVS and load initial configurations.
- * 
- * @return esp_err_t ESP_OK on success.
  */
 esp_err_t config_manager_init(void);
+
+/**
+ * @brief Get and Set WiFi Credentials.
+ */
+void config_get_wifi_ssid(char* ssid, size_t len);
+void config_get_wifi_pass(char* pass, size_t len);
+esp_err_t config_set_wifi_credentials(const char* ssid, const char* pass);
 
 /**
  * @brief Get the intervals in seconds.
