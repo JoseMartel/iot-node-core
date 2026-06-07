@@ -1,8 +1,8 @@
-# IoT Node Core: High-Performance Generic Firmware
+# IoT Node Core Firmware
 
 A robust, modular, and memory-efficient IoT firmware built with **ESP-IDF** for the **ESP32-C6 Mini**. Designed for mission-critical applications where data integrity and professional user experience are paramount.
 
-## 🚀 Key Features
+## Key Features
 
 *   **Binary-First Data Flow**: Internal communication uses C structures (`iot_packet_t`) instead of JSON to minimize RAM, CPU cycles, and stack usage.
 *   **Hybrid LIFO Buffer Strategy**:
@@ -19,7 +19,7 @@ A robust, modular, and memory-efficient IoT firmware built with **ESP-IDF** for 
 
 ---
 
-## 📂 Project Structure (Modular ESP-IDF)
+## Project Structure (Modular ESP-IDF)
 
 ```text
 iot-node-core/
@@ -39,7 +39,7 @@ iot-node-core/
 
 ---
 
-## 🔄 Data Pipeline (Robustness Architecture)
+## Data Pipeline (Robustness Architecture)
 
 The system prioritizes **Freshness** and **Integrity** through an inverse-priority pipeline:
 
@@ -51,30 +51,7 @@ The system prioritizes **Freshness** and **Integrity** through an inverse-priori
 
 ---
 
-## 🛠️ Configuration & Setup
-
-### Requirements
-*   ESP-IDF v5.2 or higher.
-*   Hardware: ESP32-C6 Mini (4MB Flash).
-
-### Menuconfig Settings
-To ensure correct operation, the following `idf.py menuconfig` settings are required:
-*   **Partition Table**: Custom CSV (`partitions.csv`), Offset `0x8000`.
-*   **Flash Size**: 4 MB.
-*   **HTTP Server**: Max Header/Content Length set to `1024`.
-*   **WiFi**: Enable WiFi 6 Support for ESP32-C6 efficiency.
-
-### Build & Flash
-```bash
-get_idf
-idf.py set-target esp32c6
-idf.py build
-idf.py flash monitor
-```
-
----
-
-## 🌐 User Experience (Dashboard)
+## User Experience (Local Configuration)
 
 The device provides a professional **Single Page Application (SPA)** dashboard:
 *   **Real-time Metrics**: Monitor Free Heap, Uptime, and NVS Buffer usage.
@@ -83,7 +60,7 @@ The device provides a professional **Single Page Application (SPA)** dashboard:
 
 ---
 
-## 📝 Technical Specs
+## Technical Specs
 *   **NVS Buffer Capacity**: 1024 records.
 *   **NVS Partition Size**: 128 KB.
 *   **App Partition Size**: 1664 KB (Dual OTA).
