@@ -10,6 +10,7 @@
 #include "storage_manager.h"
 #include "sensor_manager.h"
 #include "web_server.h"
+#include "time_manager.h"
 #include "system_types.h"
 
 static const char *TAG = "IOT_NODE_MAIN";
@@ -98,6 +99,7 @@ void app_main(void)
     ESP_ERROR_CHECK(sensor_manager_init());
     ESP_ERROR_CHECK(network_manager_init());
     ESP_ERROR_CHECK(web_server_init());
+    time_manager_init();
 
     data_queue = xQueueCreate(QUEUE_SIZE, sizeof(iot_packet_t));
     xTaskCreate(sensor_task, "sensor_task", 4096, NULL, 5, NULL);
